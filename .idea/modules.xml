@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/mustream-client/mustream-client.iml" filepath="$PROJECT_DIR$/mustream-client/mustream-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mustream-common/mustream-common.iml" filepath="$PROJECT_DIR$/mustream-common/mustream-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mustream-server/mustream-server.iml" filepath="$PROJECT_DIR$/mustream-server/mustream-server.iml" />
+    </modules>
+  </component>
+</project>
