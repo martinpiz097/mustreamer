@@ -14,6 +14,7 @@ public class TClient extends Thread {
     private NeoInputStream inputStream;
 
     private TStreamPlaying streamPlaying;
+    private TDataPlayer dataPlayer;
 
     public TClient(Socket cliSock) throws IOException {
         this.cliSock = cliSock;
@@ -23,7 +24,7 @@ public class TClient extends Thread {
 
     private void sleep() {
         try {
-            Thread.sleep(1);
+            Thread.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -39,12 +40,17 @@ public class TClient extends Thread {
                 System.out.println("Header: "+header);
                 switch (header) {
                     case PackageHeader.SOUND:
-                        SoundData soundData = new SoundData(inputStream);
-                        streamPlaying.glueSoundData(soundData);
+                        dataPlayer = new TDataPlayer(inputStream);
+                        dataPlayer.start();
+                        break;
+
+                    case PackageHeader.AUDIO_DATA:
+                        dataPlayer.saveBytes();
                         break;
 
                     case PackageHeader.NEXT:
-                        streamPlaying.finishCurrent();
+                        if (dataPlayer != null)
+                            dataPlayer.finishTrack();
                         break;
                 }
                 sleep();

@@ -42,9 +42,14 @@ public class Client extends Thread{
         return pointSplit[pointSplit.length-1].toLowerCase();
     }
 
-    public void glueSongFile(File fSound) {
-        if (fSound != null)
+    public boolean glueSongFile(File fSound) {
+        if (fSound == null || !fSound.exists()) {
+            return false;
+        }
+        else {
             dequeFiles.add(fSound);
+            return true;
+        }
     }
 
     public void sendNext() throws IOException {
@@ -55,15 +60,27 @@ public class Client extends Thread{
     public void run() {
         byte[] soundBytes;
         File fSound;
+
+        FileInputStream fileIn;
+        byte[] soundBuffer = new byte[4096];
+        int read;
+
         while (true) {
             waitForSongs();
             try {
                 fSound = dequeFiles.pollFirst();
+                fileIn = new FileInputStream(fSound);
                 outputStream.writeString(PackageHeader.SOUND);
                 outputStream.writeString(getSoundFormat(fSound));
-                soundBytes = Files.readAllBytes(fSound.toPath());
-                outputStream.write(soundBytes);
-                //outputStream.writeFile(fSound);
+
+                while ((read = fileIn.read(soundBuffer)) != -1) {
+                    if (read < soundBuffer.length) {
+                        soundBuffer = Arrays.copyOf(soundBuffer, read);
+                    }
+                    outputStream.writeString(PackageHeader.AUDIO_DATA);
+                    outputStream.write(soundBuffer);
+                }
+
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -71,20 +88,20 @@ public class Client extends Thread{
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        File song = new File("/home/martin/Escritorio/Música/Redrama/Redrama - Just a Day.ogg");
+    public static void main(String[] args) throws IOException, InterruptedException {
         Client client = new Client();
-        client.glueSongFile(song);
-        client.glueSongFile(new File("/home/martin/Dropbox/Java/Proyectos/IntelliJ/OrangePlayerProject/" +
-                "OrangePlayMusic/muplayer/audio/mp3/au3.mp3"));
-        client.start();
 
-        try {
-            Thread.sleep(30000);
-            client.sendNext();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        client.glueSongFile(new File("/home/martin/Dropbox/Java/Proyectos/IntelliJ/OrangePlayerProject/" +
+                "OrangePlayMusic/muplayer/audio/mp3/au1.mp3"));
+
+        Thread.sleep(10000);
+
+        client.sendNext();
+        System.out.println("Next Sended!");
+        client.glueSongFile(new File("/home/martin/Dropbox/Java/Proyectos/IntelliJ/OrangePlayerProject/" +
+                "OrangePlayMusic/muplayer/audio/mp3/au2.mp3"));
+
+        client.start();
     }
 
 }
