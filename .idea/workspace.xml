@@ -2,12 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4476d4ba-2aa4-4292-a133-b289301f9385" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/TDataPlayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_orangeplayer_muplayer_1_8.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_orangeplayer_muplayer_1_9_2.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mustream-client/mustream-client.iml" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-client/mustream-client.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mustream-client/src/main/java/org/mustream/client/net/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-client/src/main/java/org/mustream/client/net/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/TClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/TClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/TStreamPlaying.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/TStreamPlaying.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mustream-server/mustream-server.iml" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-server/mustream-server.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mustream-server/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-server/pom.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />

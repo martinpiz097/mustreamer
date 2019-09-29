@@ -73,6 +73,7 @@ public class Client extends Thread{
                 outputStream.writeString(PackageHeader.SOUND);
                 outputStream.writeString(getSoundFormat(fSound));
 
+                
                 while ((read = fileIn.read(soundBuffer)) != -1) {
                     if (read < soundBuffer.length) {
                         soundBuffer = Arrays.copyOf(soundBuffer, read);
