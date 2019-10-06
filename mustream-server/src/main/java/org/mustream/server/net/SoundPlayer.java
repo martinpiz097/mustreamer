@@ -3,7 +3,6 @@ package org.mustream.server.net;
 import org.aucom.sound.Speaker;
 import org.muplayer.audio.formats.io.AudioDataInputStream;
 import org.muplayer.audio.formats.io.AudioDataOutputStream;
-import org.muplayer.system.TrackStates;
 import org.mustream.common.audio.AudioFormatUtils;
 import org.mustream.common.audio.FormatData;
 
@@ -25,6 +24,7 @@ public class SoundPlayer extends Thread {
         audioDataOutputStream = new AudioDataOutputStream(audioDataInputStream.getByteBuffer());
         on = false;
         ready = false;
+        setName("SoundPlayer "+getId());
     }
 
     public boolean hasAudioData() throws IOException {
@@ -78,12 +78,20 @@ public class SoundPlayer extends Thread {
             speaker.open();
             waitForData();
 
-            while ((on && !ready) || hasAudioData()) {
-                speaker.playAudio(readBytes());
+            while (on && !ready) {
+                while (hasAudioData())
+                    speaker.playAudio(readBytes());
+                Thread.sleep(100);
             }
         } catch (LineUnavailableException | IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         speaker.close();
+        audioDataOutputStream = null;
+        audioDataInputStream = null;
+        speaker = null;
+        System.gc();
     }
 }

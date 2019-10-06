@@ -24,6 +24,7 @@ public class Server extends Thread {
     private Server() throws IOException {
         serverSocket = new ServerSocket(SysInfo.MUSTREAMER_PORT);
         connected = false;
+        setName("MustreamServer");
     }
 
     public void disconnect() {

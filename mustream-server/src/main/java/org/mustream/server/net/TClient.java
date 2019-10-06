@@ -1,9 +1,6 @@
 package org.mustream.server.net;
 
-import org.mustream.common.PackageHeader;
-import org.mustream.common.audio.AudioFormatUtils;
 import org.mustream.common.audio.FormatData;
-import org.mustream.common.audio.SoundData;
 import org.mustream.common.net.MustreamPackage;
 import org.mustream.common.net.NeoInputStream;
 import org.mustream.common.sys.TrackAlert;
@@ -28,6 +25,8 @@ public class TClient extends Thread {
         inputStream = new NeoInputStream(cliSock.getInputStream());
         playerDeque = new ArrayDeque<>();
         on = false;
+
+        setName("TClient "+cliSock.getInetAddress().toString());
     }
 
     private void sleep() {
@@ -118,9 +117,7 @@ public class TClient extends Thread {
                 sleep(10);
             }
 
-        } catch (IOException | ClassNotFoundException | LineUnavailableException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (IOException | ClassNotFoundException | LineUnavailableException | InterruptedException e) {
             e.printStackTrace();
         }
 

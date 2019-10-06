@@ -1,2 +1,3 @@
 - NEXT
 	- Fix song change in streaming
+	- Threads renamed and add few optimizations

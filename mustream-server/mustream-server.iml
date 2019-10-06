@@ -11,7 +11,7 @@
     </content>
     <orderEntry type="jdk" jdkName="java-8-jdk" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: org.orangeplayer:muplayer:1.9.2" level="project" />
+    <orderEntry type="library" name="Maven: org.orangeplayer:muplayer:1.9.3" level="project" />
     <orderEntry type="module" module-name="mustream-common" />
   </component>
 </module>

@@ -28,9 +28,14 @@ public class Client extends Thread{
     private Thread audioSender;
 
     public Client() throws IOException {
-        socket = new Socket("localhost", SysInfo.MUSTREAMER_PORT);
+        this("localhost");
+    }
+
+    public Client(String host) throws IOException {
+        socket = new Socket(host, SysInfo.MUSTREAMER_PORT);
         outputStream = new NeoOutputStream(socket.getOutputStream());
         dequeFiles = new ArrayDeque<>();
+        setName("Client "+socket.getRemoteSocketAddress().toString());
     }
 
     private void waitForSongs() {
@@ -99,7 +104,7 @@ public class Client extends Thread{
                         e.printStackTrace();
                     }
                 });
-                ThreadUtil.sleepUntil(audioTag.getDuration()*1000);
+                ThreadUtil.sleepUntil(audioTag.getDuration()*1000-100);
                 outputStream.writePackage(TrackAlert.TRACK_FINISHED);
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
@@ -117,8 +122,8 @@ public class Client extends Thread{
         client.sendNext();
         System.out.println("Next Sended!");
          */
-        client.glueSongFile(new File("/home/martin/Dropbox/Java/Proyectos/IntelliJ/OrangePlayerProject/" +
-                "OrangePlayMusic/muplayer/audio/mp3/au2.mp3"));
+        //client.glueSongFile(new File("/home/martin/Dropbox/Java/Proyectos/IntelliJ/OrangePlayerProject/" +
+        //        "OrangePlayMusic/muplayer/audio/mp3/au2.mp3"));
         client.start();
     }
 
