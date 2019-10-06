@@ -33,6 +33,11 @@
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.orangeplayer</groupId>
+            <artifactId>muplayer</artifactId>
+            <version>1.9.2</version>
+        </dependency>
     </dependencies>
 
 </project>

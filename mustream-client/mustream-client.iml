@@ -12,5 +12,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="mustream-common" />
+    <orderEntry type="library" name="Maven: org.orangeplayer:muplayer:1.9.2" level="project" />
   </component>
 </module>
