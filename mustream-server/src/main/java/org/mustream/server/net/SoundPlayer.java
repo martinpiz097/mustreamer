@@ -1,41 +1,70 @@
 package org.mustream.server.net;
 
 import org.aucom.sound.Speaker;
-import org.muplayer.audio.Track;
-import org.mustream.common.net.NeoInputStream;
+import org.muplayer.audio.formats.io.AudioDataInputStream;
+import org.muplayer.audio.formats.io.AudioDataOutputStream;
+import org.muplayer.system.TrackStates;
+import org.mustream.common.audio.AudioFormatUtils;
+import org.mustream.common.audio.FormatData;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
-import java.util.ArrayDeque;
+import java.io.IOException;
 
 public class SoundPlayer extends Thread {
-    private Track track;
-    private NeoInputStream dataIn;
-    private final ArrayDeque<byte[]> dequeBytes;
-
+    private Speaker speaker;
     private volatile boolean on;
 
-    public SoundPlayer(String format) throws LineUnavailableException {
-        this.speaker = new Speaker(format);
-        dequeBytes = new ArrayDeque<>();
+    private AudioDataInputStream audioDataInputStream;
+    private AudioDataOutputStream audioDataOutputStream;
+
+    private boolean ready;
+
+    public SoundPlayer(FormatData formatData) throws LineUnavailableException {
+        speaker = new Speaker(AudioFormatUtils.getAudioFormat(formatData));
+        audioDataInputStream = new AudioDataInputStream();
+        audioDataOutputStream = new AudioDataOutputStream(audioDataInputStream.getByteBuffer());
         on = false;
+        ready = false;
     }
 
-    private byte[] readBytes() {
-        while (dequeBytes.isEmpty()) {
+    public boolean hasAudioData() throws IOException {
+        return audioDataInputStream.available() > 0;
+    }
+
+    private byte[] readBytes() throws IOException {
+        int available;
+        while ((available = audioDataInputStream.available()) == 0) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        return dequeBytes.pollFirst();
+        byte[] bytes = new byte[Math.min(available, 4096)];
+        audioDataInputStream.read(bytes);
+        return bytes;
     }
 
-    public synchronized void addBytes(byte[] bytes) {
-        dequeBytes.add(bytes);
+    private void waitForData() {
+        try {
+            while (!hasAudioData()) {
+                sleep(100);
+            }
+        } catch (InterruptedException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized void addBytes(byte[] bytes) throws IOException {
+        audioDataOutputStream.write(bytes);
+    }
+
+    public synchronized boolean isPrepared() {
+        return ready;
+    }
+
+    public synchronized void prepareToFinish() {
+        ready = true;
     }
 
     public void shutdown() {
@@ -47,14 +76,14 @@ public class SoundPlayer extends Thread {
         on = true;
         try {
             speaker.open();
-        } catch (LineUnavailableException e) {
+            waitForData();
+
+            while ((on && !ready) || hasAudioData()) {
+                speaker.playAudio(readBytes());
+            }
+        } catch (LineUnavailableException | IOException e) {
             e.printStackTrace();
         }
-
-        while (on || !dequeBytes.isEmpty()) {
-            speaker.playAudio(readBytes());
-        }
         speaker.close();
-        dequeBytes.clear();
     }
 }

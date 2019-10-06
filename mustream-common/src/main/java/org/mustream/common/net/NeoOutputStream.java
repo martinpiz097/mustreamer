@@ -80,6 +80,14 @@ public class NeoOutputStream extends OutputStream {
         byteOs.close();
     }
 
+    public void writePackage(MustreamPackage pkg) throws IOException {
+        writeObject(pkg);
+    }
+
+    public void writePackage(Object obj) throws IOException {
+        writePackage(new MustreamPackage(obj));
+    }
+
     public void writeFile(File file) throws IOException {
         final byte[] bytes = Files.readAllBytes(file.toPath());
         final int fileLenght = bytes.length;

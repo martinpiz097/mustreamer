@@ -40,6 +40,10 @@ public class NeoInputStream extends InputStream {
         return obj;
     }
 
+    public MustreamPackage readPackage() throws IOException, ClassNotFoundException {
+        return (MustreamPackage) readObject();
+    }
+
     public File readFile() throws IOException {
         File tmp = new File(SysInfo.SERVER_TEMP_FOLDER, String.valueOf(new Date().getTime()));
         tmp.createNewFile();

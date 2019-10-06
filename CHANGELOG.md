@@ -1,0 +1,2 @@
+- NEXT
+	- Fix song change in streaming

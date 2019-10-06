@@ -4,7 +4,9 @@ import org.mustream.common.PackageHeader;
 import org.mustream.common.audio.AudioFormatUtils;
 import org.mustream.common.audio.FormatData;
 import org.mustream.common.audio.SoundData;
+import org.mustream.common.net.MustreamPackage;
 import org.mustream.common.net.NeoInputStream;
+import org.mustream.common.sys.TrackAlert;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
@@ -19,10 +21,13 @@ public class TClient extends Thread {
     private Deque<SoundPlayer> playerDeque;
     private SoundPlayer soundPlayer;
 
+    private boolean on;
+
     public TClient(Socket cliSock) throws IOException {
         this.cliSock = cliSock;
         inputStream = new NeoInputStream(cliSock.getInputStream());
         playerDeque = new ArrayDeque<>();
+        on = false;
     }
 
     private void sleep() {
@@ -39,32 +44,83 @@ public class TClient extends Thread {
         }
     }
 
+    public boolean hasSoundPlayers() {
+        return !playerDeque.isEmpty();
+    }
+
+    public SoundPlayer getNext() {
+        return playerDeque.peekFirst();
+    }
+
+    public SoundPlayer getAndRemoveNext() {
+        return playerDeque.pollFirst();
+    }
+
+    public synchronized void shutdown() {
+        on = false;
+    }
+
     @Override
     public void run() {
         try {
-            String header;
-            while (true) {
-                header = inputStream.readString();
-                System.out.println("Header: "+header);
+            on = true;
+            MustreamPackage pkg;
+            Class objClass;
 
-                switch (header) {
-                    case PackageHeader.SOUND:
-                        SoundData soundData = (SoundData) inputStream.readObject();
-                        soundPlayer = new SoundPlayer(AudioFormatUtils
-                                .getAudioFormat((FormatData) inputStream.readObject()));
+            while (on) {
+                pkg = inputStream.readPackage();
+                objClass = pkg.getObjectClass();
+
+                if (objClass.equals(byte[].class)) {
+                    if (soundPlayer.isAlive()) {
+                        if (soundPlayer.isPrepared() && hasSoundPlayers()) {
+                            getNext().addBytes(pkg.getObject());
+                        }
+                        else {
+                            soundPlayer.addBytes(pkg.getObject());
+                        }
+                    }
+                    else if (hasSoundPlayers()) {
+                        soundPlayer = getAndRemoveNext();
                         soundPlayer.start();
-                        break;
-
-                    case PackageHeader.AUDIO_DATA:
-                        soundPlayer.addBytes(inputStream.readAllBytes());
-                        break;
-
-                    case PackageHeader.NEXT:
-                        killSoundPlayer();
+                        soundPlayer.addBytes(pkg.getObject());
+                    }
                 }
-                sleep();
+                else if (objClass.equals(FormatData.class)){
+                    SoundPlayer newSoundPlayer = new SoundPlayer(pkg.getObject());
+                    if (soundPlayer == null) {
+                        soundPlayer = newSoundPlayer;
+                        soundPlayer.start();
+                    }
+                    else {
+                        if (soundPlayer.isAlive()) {
+                            playerDeque.add(newSoundPlayer);
+                        }
+                        else {
+                            if (hasSoundPlayers()) {
+                                playerDeque.add(newSoundPlayer);
+                                soundPlayer = getAndRemoveNext();
+                                soundPlayer.start();
+                            }
+                            else {
+                                soundPlayer = newSoundPlayer;
+                                soundPlayer.start();
+                            }
+                        }
+                    }
+                } else if (objClass.equals(TrackAlert.class)) {
+                    if (pkg.getObject() == TrackAlert.TRACK_FINISHED) {
+                        if (soundPlayer != null && soundPlayer.isAlive()) {
+                            soundPlayer.prepareToFinish();
+                        }
+                    }
+                }
+                sleep(10);
             }
+
         } catch (IOException | ClassNotFoundException | LineUnavailableException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 

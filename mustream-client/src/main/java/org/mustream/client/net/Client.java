@@ -1,27 +1,31 @@
 package org.mustream.client.net;
 
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
-import org.jaudiotagger.tag.TagException;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.info.AudioTag;
-import org.muplayer.thread.TaskRunner;
-import org.mustream.common.PackageHeader;
+import org.mustream.common.audio.AudioFormatUtils;
 import org.mustream.common.audio.SoundData;
 import org.mustream.common.net.NeoOutputStream;
 import org.mustream.common.sys.SysInfo;
+import org.mustream.common.sys.TaskRunner;
+import org.mustream.common.sys.TrackAlert;
 import thread.ThreadUtil;
 
-import java.io.*;
+import javax.sound.sampled.AudioInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.net.Socket;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Client extends Thread{
     private Socket socket;
     private NeoOutputStream outputStream;
 
     private Deque<File> dequeFiles;
+
+    private Thread audioSender;
 
     public Client() throws IOException {
         socket = new Socket("localhost", SysInfo.MUSTREAMER_PORT);
@@ -57,6 +61,10 @@ public class Client extends Thread{
         interrupt();
     }
 
+    public Thread getAudioSender() {
+        return audioSender;
+    }
+
     @Override
     public void run() {
         File fSound;
@@ -65,40 +73,36 @@ public class Client extends Thread{
         Track track;
         AudioTag audioTag;
         SoundData soundData;
+        AtomicReference<AudioInputStream> atomicStream = new AtomicReference<>();
 
         while (true) {
             waitForSongs();
             try {
                 fSound = dequeFiles.pollFirst();
-                soundData = new SoundData(fSound);
-                audioTag = new AudioTag(fSound);
+                track = Track.getTrack(fSound);
+                audioTag = track.getTagInfo();
+                outputStream.writePackage(AudioFormatUtils.getFormatData(track.getAudioFormat()));
 
-                outputStream.writeString(PackageHeader.SOUND);
-                outputStream.writeObject(soundData);
+                atomicStream.set(track.getDecodedStream());
 
-                SoundData finalSoundData = soundData;
-                TaskRunner.execute(() -> {
+                audioSender = TaskRunner.execute(() -> {
                     int read;
-                    while ((read = finalSoundData.readBytes(soundBuffer)) != -1) {
-                        try {
-                            outputStream.writeString(PackageHeader.AUDIO_DATA);
+                    try {
+                        while ((read = atomicStream.get().read(soundBuffer)) != -1) {
                             if (read < soundBuffer.length) {
-                                outputStream.write(Arrays.copyOf(soundBuffer, read));
+                                outputStream.writePackage(Arrays.copyOf(soundBuffer, read));
+                            } else {
+                                outputStream.writePackage(soundBuffer);
                             }
-                            else {
-                                outputStream.write(soundBuffer);
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
                         }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 });
                 ThreadUtil.sleepUntil(audioTag.getDuration()*1000);
-
-            } catch (IOException | CannotReadException | ReadOnlyFileException | TagException | InvalidAudioFrameException e) {
+                outputStream.writePackage(TrackAlert.TRACK_FINISHED);
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
-            } catch (InterruptedException e) {
-
             }
         }
     }
