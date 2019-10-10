@@ -108,10 +108,22 @@ public class TClient extends Thread {
                         }
                     }
                 } else if (objClass.equals(TrackAlert.class)) {
-                    if (pkg.getObject() == TrackAlert.TRACK_FINISHED) {
-                        if (soundPlayer != null && soundPlayer.isAlive()) {
-                            soundPlayer.prepareToFinish();
-                        }
+                    TrackAlert alert = pkg.getObject();
+                    switch (alert) {
+                        case TRACK_FINISHED:
+                            if (soundPlayer != null && soundPlayer.isAlive()) {
+                                soundPlayer.prepareToFinish();
+                            }
+                            break;
+                        case PAUSE:
+                            if (soundPlayer != null && soundPlayer.isAlive())
+                                soundPlayer.suspend();
+                            break;
+                        case RESUME:
+                            if (soundPlayer != null && soundPlayer.isAlive()) {
+                                soundPlayer.resume();
+                            }
+                            break;
                     }
                 }
                 sleep(10);

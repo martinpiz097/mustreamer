@@ -2,13 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4476d4ba-2aa4-4292-a133-b289301f9385" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/mustream-client/src/main/java/org/mustream/client/net/ConnectionManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mustream-client/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-client/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mustream-client/src/main/java/org/mustream/client/net/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-client/src/main/java/org/mustream/client/net/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mustream-server/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-server/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/SoundPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/SoundPlayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mustream-common/src/main/java/org/mustream/common/sys/TrackAlert.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-common/src/main/java/org/mustream/common/sys/TrackAlert.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/TClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/TClient.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -58,6 +55,11 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/mustream-common/src/main/java/org/mustream/common/net" />
     </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="(" />
+    </option>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">

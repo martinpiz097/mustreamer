@@ -1,3 +1,4 @@
 - NEXT
 	- Fix song change in streaming
 	- Threads renamed and add few optimizations
+	- [SET] Applying functional standard on client and server

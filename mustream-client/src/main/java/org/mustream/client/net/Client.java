@@ -22,18 +22,19 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Client extends Thread{
     private Socket socket;
     private NeoOutputStream outputStream;
-
     private Deque<File> dequeFiles;
-
     private Thread audioSender;
 
-    public Client() throws IOException {
+    public Client() {
         this("localhost");
     }
 
-    public Client(String host) throws IOException {
-        socket = new Socket(host, SysInfo.MUSTREAMER_PORT);
-        outputStream = new NeoOutputStream(socket.getOutputStream());
+    public Client(String host) {
+        try {
+            socket = new Socket(host, SysInfo.MUSTREAMER_PORT);
+            outputStream = new NeoOutputStream(socket.getOutputStream());
+        } catch (IOException e) {
+        }
         dequeFiles = new ArrayDeque<>();
         setName("Client "+socket.getRemoteSocketAddress().toString());
     }
@@ -52,6 +53,10 @@ public class Client extends Thread{
         }
     }
 
+    public boolean isConnected() {
+        return socket != null;
+    }
+
     public boolean glueSongFile(File fSound) {
         if (fSound == null || !fSound.exists()) {
             return false;
@@ -68,6 +73,16 @@ public class Client extends Thread{
 
     public Thread getAudioSender() {
         return audioSender;
+    }
+
+    public void pausePlayer() throws IOException {
+        outputStream.writePackage(TrackAlert.PAUSE);
+        suspend();
+    }
+
+    public void resumePlayer() throws IOException {
+        outputStream.writePackage(TrackAlert.RESUME);
+        resume();
     }
 
     @Override
@@ -113,9 +128,16 @@ public class Client extends Thread{
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        Client client = new Client();
+        final String host = "localhost";
+        Client client = ConnectionManager.connectTo(host);
         client.glueSongFile(new File("/home/martin/Dropbox/Java/Proyectos/IntelliJ/OrangePlayerProject/" +
                 "OrangePlayMusic/muplayer/audio/mp3/au1.mp3"));
+
+        client.start();
+        Thread.sleep(5000);
+        client.pausePlayer();
+        Thread.sleep(3000);
+        client.resumePlayer();
 
         /*Thread.sleep(10000);
 
@@ -124,7 +146,6 @@ public class Client extends Thread{
          */
         //client.glueSongFile(new File("/home/martin/Dropbox/Java/Proyectos/IntelliJ/OrangePlayerProject/" +
         //        "OrangePlayMusic/muplayer/audio/mp3/au2.mp3"));
-        client.start();
     }
 
 }
