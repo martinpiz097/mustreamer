@@ -6,12 +6,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="mustream-server" />
         <module name="mustream-common" />
+        <module name="mustream" />
+        <module name="mustream-server" />
         <module name="mustream-client" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="mustream" target="1.8" />
       <module name="mustream-client" target="1.8" />
       <module name="mustream-common" target="1.8" />
       <module name="mustream-server" target="1.8" />

@@ -8,22 +8,24 @@ import org.mustream.common.net.NeoOutputStream;
 import org.mustream.common.sys.SysInfo;
 import org.mustream.common.sys.TaskRunner;
 import org.mustream.common.sys.TrackAlert;
-import thread.ThreadUtil;
+import org.mustream.client.thread.ThreadUtil;
 
 import javax.sound.sampled.AudioInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Client extends Thread{
     private Socket socket;
     private NeoOutputStream outputStream;
-    private Deque<File> dequeFiles;
-    private Thread audioSender;
+    private final Deque<File> dequeFiles;
+    private AudioSender audioSender;
 
     public Client() {
         this("localhost");
@@ -35,7 +37,7 @@ public class Client extends Thread{
             outputStream = new NeoOutputStream(socket.getOutputStream());
         } catch (IOException e) {
         }
-        dequeFiles = new ArrayDeque<>();
+        dequeFiles = new LinkedList<>();
         setName("Client "+socket.getRemoteSocketAddress().toString());
     }
 
@@ -88,7 +90,6 @@ public class Client extends Thread{
     @Override
     public void run() {
         File fSound;
-
         byte[] soundBuffer = new byte[4096];
         Track track;
         AudioTag audioTag;
@@ -101,24 +102,12 @@ public class Client extends Thread{
                 fSound = dequeFiles.pollFirst();
                 track = Track.getTrack(fSound);
                 audioTag = track.getTagInfo();
+
                 outputStream.writePackage(AudioFormatUtils.getFormatData(track.getAudioFormat()));
+                //atomicStream.set(track.getDecodedStream());
+                audioSender = new AudioSender(track.getDecodedStream(), outputStream);
+                audioSender.start();
 
-                atomicStream.set(track.getDecodedStream());
-
-                audioSender = TaskRunner.execute(() -> {
-                    int read;
-                    try {
-                        while ((read = atomicStream.get().read(soundBuffer)) != -1) {
-                            if (read < soundBuffer.length) {
-                                outputStream.writePackage(Arrays.copyOf(soundBuffer, read));
-                            } else {
-                                outputStream.writePackage(soundBuffer);
-                            }
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
                 ThreadUtil.sleepUntil(audioTag.getDuration()*1000-100);
                 outputStream.writePackage(TrackAlert.TRACK_FINISHED);
             } catch (IOException | InterruptedException e) {
@@ -127,25 +116,28 @@ public class Client extends Thread{
         }
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        final String host = "localhost";
-        Client client = ConnectionManager.connectTo(host);
-        client.glueSongFile(new File("/home/martin/Dropbox/Java/Proyectos/IntelliJ/OrangePlayerProject/" +
-                "OrangePlayMusic/muplayer/audio/mp3/au1.mp3"));
+    public static void main(String[] args) {
+        if (args.length < 3) {
+            System.err.println("Invalid arguments");
+        }
+        else {
+            String host = null;
+            Integer port = null;
+            File fSound = null;
+            if (args[0].equals("-h")) {
+                host = args[1];
+            }
+            else if (args[0].equals("-p")){
+                try {
+                    port = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    port = null;
+                }
+            }
+            else {
 
-        client.start();
-        Thread.sleep(5000);
-        client.pausePlayer();
-        Thread.sleep(3000);
-        client.resumePlayer();
-
-        /*Thread.sleep(10000);
-
-        client.sendNext();
-        System.out.println("Next Sended!");
-         */
-        //client.glueSongFile(new File("/home/martin/Dropbox/Java/Proyectos/IntelliJ/OrangePlayerProject/" +
-        //        "OrangePlayMusic/muplayer/audio/mp3/au2.mp3"));
+            }
+        }
     }
 
 }

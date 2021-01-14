@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 
 public class Server extends Thread {
-    private ServerSocket serverSocket;
+    private final ServerSocket serverSocket;
     private TClient client;
 
     private boolean connected;

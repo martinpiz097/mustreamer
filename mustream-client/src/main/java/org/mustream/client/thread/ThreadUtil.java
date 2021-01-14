@@ -1,4 +1,4 @@
-package thread;
+package org.mustream.client.thread;
 
 public class ThreadUtil {
     public static void sleepUntil(long millis) throws InterruptedException {
