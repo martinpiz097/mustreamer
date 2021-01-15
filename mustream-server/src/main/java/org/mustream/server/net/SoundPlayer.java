@@ -1,70 +1,38 @@
 package org.mustream.server.net;
 
 import org.aucom.sound.Speaker;
-import org.muplayer.audio.formats.io.AudioDataInputStream;
-import org.muplayer.audio.formats.io.AudioDataOutputStream;
+import org.muplayer.audio.Track;
 import org.mustream.common.audio.AudioFormatUtils;
-import org.mustream.common.audio.FormatData;
+import org.mustream.common.net.NeoInputStream;
 
 import javax.sound.sampled.LineUnavailableException;
-import java.io.IOException;
+import java.io.*;
 
 public class SoundPlayer extends Thread {
-    private Speaker speaker;
+    private volatile Track track;
     private volatile boolean on;
 
-    private AudioDataInputStream audioDataInputStream;
-    private AudioDataOutputStream audioDataOutputStream;
+    private final ByteArrayOutputStream outputStream;
+    private volatile int receivedData;
 
-    private boolean ready;
-
-    public SoundPlayer(FormatData formatData) throws LineUnavailableException {
-        speaker = new Speaker(AudioFormatUtils.getAudioFormat(formatData));
-        audioDataInputStream = new AudioDataInputStream();
-        audioDataOutputStream = new AudioDataOutputStream(audioDataInputStream.getByteBuffer());
+    public SoundPlayer() throws LineUnavailableException {
+        outputStream = new ByteArrayOutputStream();
+        receivedData = 0;
         on = false;
-        ready = false;
         setName("SoundPlayer "+getId());
     }
 
-    public boolean hasAudioData() throws IOException {
-        return audioDataInputStream.available() > 0;
-    }
-
-    private byte[] readBytes() throws IOException {
-        int available;
-        while ((available = audioDataInputStream.available()) == 0) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        byte[] bytes = new byte[Math.min(available, 4096)];
-        audioDataInputStream.read(bytes);
-        return bytes;
+    private void waitForTrackPlaying() {
+        while (track.isAlive()) {}
     }
 
     private void waitForData() {
-        try {
-            while (!hasAudioData()) {
-                sleep(100);
-            }
-        } catch (InterruptedException | IOException e) {
-            e.printStackTrace();
-        }
+        while (receivedData == 0) {}
     }
 
     public synchronized void addBytes(byte[] bytes) throws IOException {
-        audioDataOutputStream.write(bytes);
-    }
-
-    public synchronized boolean isPrepared() {
-        return ready;
-    }
-
-    public synchronized void prepareToFinish() {
-        ready = true;
+        outputStream.write(bytes);
+        receivedData+=bytes.length;
     }
 
     public void shutdown() {
@@ -74,24 +42,10 @@ public class SoundPlayer extends Thread {
     @Override
     public void run() {
         on = true;
-        try {
-            speaker.open();
-            waitForData();
-
-            while (on && !ready) {
-                while (hasAudioData())
-                    speaker.playAudio(readBytes());
-                Thread.sleep(100);
-            }
-        } catch (LineUnavailableException | IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        speaker.close();
-        audioDataOutputStream = null;
-        audioDataInputStream = null;
-        speaker = null;
+        waitForData();
+        track = Track.getTrack(new ByteArrayInputStream(outputStream.toByteArray()));
+        track.start();
+        waitForTrackPlaying();
         System.gc();
     }
 }

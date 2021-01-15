@@ -2,8 +2,11 @@ package org.mustream.client.net;
 
 import org.muplayer.audio.Track;
 import org.muplayer.audio.info.AudioTag;
+import org.mustream.common.PackageHeader;
 import org.mustream.common.audio.AudioFormatUtils;
 import org.mustream.common.audio.SoundData;
+import org.mustream.common.io.MSOutputStream;
+import org.mustream.common.net.MustreamPackage;
 import org.mustream.common.net.NeoOutputStream;
 import org.mustream.common.sys.SysInfo;
 import org.mustream.common.sys.TaskRunner;
@@ -23,7 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class Client extends Thread{
     private Socket socket;
-    private NeoOutputStream outputStream;
+    private MSOutputStream outputStream;
     private final Deque<File> dequeFiles;
     private AudioSender audioSender;
 
@@ -34,7 +37,7 @@ public class Client extends Thread{
     public Client(String host) {
         try {
             socket = new Socket(host, SysInfo.MUSTREAMER_PORT);
-            outputStream = new NeoOutputStream(socket.getOutputStream());
+            outputStream = new MSOutputStream(socket.getOutputStream());
         } catch (IOException e) {
         }
         dequeFiles = new LinkedList<>();
@@ -73,46 +76,29 @@ public class Client extends Thread{
         interrupt();
     }
 
-    public Thread getAudioSender() {
+    public AudioSender getAudioSender() {
         return audioSender;
     }
 
     public void pausePlayer() throws IOException {
-        outputStream.writePackage(TrackAlert.PAUSE);
+        outputStream.write(TrackAlert.PAUSE);
         suspend();
     }
 
     public void resumePlayer() throws IOException {
-        outputStream.writePackage(TrackAlert.RESUME);
+        outputStream.write(TrackAlert.RESUME);
         resume();
     }
 
     @Override
     public void run() {
-        File fSound;
-        byte[] soundBuffer = new byte[4096];
-        Track track;
-        AudioTag audioTag;
-        SoundData soundData;
-        AtomicReference<AudioInputStream> atomicStream = new AtomicReference<>();
+        File soundFile;
 
         while (true) {
             waitForSongs();
-            try {
-                fSound = dequeFiles.pollFirst();
-                track = Track.getTrack(fSound);
-                audioTag = track.getTagInfo();
-
-                outputStream.writePackage(AudioFormatUtils.getFormatData(track.getAudioFormat()));
-                //atomicStream.set(track.getDecodedStream());
-                audioSender = new AudioSender(track.getDecodedStream(), outputStream);
-                audioSender.start();
-
-                ThreadUtil.sleepUntil(audioTag.getDuration()*1000-100);
-                outputStream.writePackage(TrackAlert.TRACK_FINISHED);
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-            }
+            soundFile = dequeFiles.pollFirst();
+            audioSender = new AudioSender(soundFile, outputStream);
+            audioSender.start();
         }
     }
 
@@ -124,9 +110,8 @@ public class Client extends Thread{
             String host = null;
             Integer port = null;
             File fSound = null;
-            if (args[0].equals("-h")) {
+            if (args[0].equals("-h"))
                 host = args[1];
-            }
             else if (args[0].equals("-p")){
                 try {
                     port = Integer.parseInt(args[1]);

@@ -12,8 +12,6 @@ public class TestClient {
         final Client client = ConnectionManager.connectTo(host);
         client.glueSongFile(new File("/home/martin/Dropbox/Java/Proyectos/IntelliJ/OrangePlayerProject/" +
                 "OrangePlayMusic/muplayer/audio/mp3/au2.mp3"));
-        client.glueSongFile(new File("/home/martin/Dropbox/Java/Proyectos/IntelliJ/OrangePlayerProject/" +
-                "OrangePlayMusic/muplayer/audio/mp3/au1.mp3"));
 
         client.start();
         //Thread.sleep(5000);

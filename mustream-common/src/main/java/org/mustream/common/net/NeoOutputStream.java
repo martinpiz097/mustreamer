@@ -72,8 +72,8 @@ public class NeoOutputStream extends OutputStream {
     }
 
     public void writeObject(Object obj) throws IOException {
-        ByteArrayOutputStream byteOs = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(byteOs);
+        final ByteArrayOutputStream byteOs = new ByteArrayOutputStream();
+        final ObjectOutputStream oos = new ObjectOutputStream(byteOs);
         oos.writeObject(obj);
         write(byteOs.toByteArray());
         oos.close();

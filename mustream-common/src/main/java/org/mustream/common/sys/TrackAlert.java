@@ -1,5 +1,7 @@
 package org.mustream.common.sys;
 
-public enum TrackAlert {
-    TRACK_FINISHED, PAUSE, RESUME;
+public class TrackAlert {
+    public static final int TRACK_FINISHED = 501;
+    public static final int PAUSE = 502;
+    public static final int RESUME = 503;
 }

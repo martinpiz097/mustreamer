@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class MustreamPackage implements Serializable {
     private final Object object;
-    private final Class objectClass;
+    private final Class<?> objectClass;
 
     public MustreamPackage(Object object) {
         this.object = object;
@@ -16,7 +16,7 @@ public class MustreamPackage implements Serializable {
         return (T) object;
     }
 
-    public Class getObjectClass() {
+    public Class<?> getObjectClass() {
         return objectClass;
     }
 }
