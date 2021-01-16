@@ -1,34 +1,23 @@
 package org.mustream.client.net;
 
-import org.muplayer.audio.Track;
-import org.muplayer.audio.info.AudioTag;
-import org.mustream.common.PackageHeader;
-import org.mustream.common.audio.AudioFormatUtils;
-import org.mustream.common.audio.SoundData;
 import org.mustream.common.io.MSOutputStream;
-import org.mustream.common.net.MustreamPackage;
-import org.mustream.common.net.NeoOutputStream;
 import org.mustream.common.sys.SysInfo;
-import org.mustream.common.sys.TaskRunner;
 import org.mustream.common.sys.TrackAlert;
-import org.mustream.client.thread.ThreadUtil;
 
-import javax.sound.sampled.AudioInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
-import java.nio.charset.Charset;
-import java.util.ArrayDeque;
-import java.util.Arrays;
+import java.net.http.HttpClient;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class Client extends Thread{
     private Socket socket;
     private MSOutputStream outputStream;
     private final Deque<File> dequeFiles;
     private AudioSender audioSender;
+
+    private volatile boolean connected;
 
     public Client() {
         this("localhost");
@@ -39,8 +28,11 @@ public class Client extends Thread{
             socket = new Socket(host, SysInfo.MUSTREAMER_PORT);
             outputStream = new MSOutputStream(socket.getOutputStream());
         } catch (IOException e) {
+            e.printStackTrace();
         }
         dequeFiles = new LinkedList<>();
+        connected = false;
+
         setName("Client "+socket.getRemoteSocketAddress().toString());
     }
 
@@ -90,38 +82,22 @@ public class Client extends Thread{
         resume();
     }
 
-    @Override
-    public void run() {
-        File soundFile;
-
-        while (true) {
-            waitForSongs();
-            soundFile = dequeFiles.pollFirst();
-            audioSender = new AudioSender(soundFile, outputStream);
-            audioSender.start();
-        }
+    public void disconnect() {
+        connected = false;
     }
 
-    public static void main(String[] args) {
-        if (args.length < 3) {
-            System.err.println("Invalid arguments");
-        }
-        else {
-            String host = null;
-            Integer port = null;
-            File fSound = null;
-            if (args[0].equals("-h"))
-                host = args[1];
-            else if (args[0].equals("-p")){
-                try {
-                    port = Integer.parseInt(args[1]);
-                } catch (NumberFormatException e) {
-                    port = null;
-                }
-            }
-            else {
+    @Override
+    public void run() {
+        connected = true;
+        File soundFile;
 
-            }
+        while (connected) {
+            waitForSongs();
+            soundFile = dequeFiles.pollFirst();
+            if (audioSender != null)
+                audioSender.interrupt();
+            audioSender = new AudioSender(soundFile, outputStream);
+            audioSender.start();
         }
     }
 

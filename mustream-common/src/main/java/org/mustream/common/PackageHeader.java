@@ -6,4 +6,5 @@ public class PackageHeader {
     public static final int CONNECT = 402;
     public static final int AUDIO_DATA = 403;
     public static final int NEXT = 404;
+    public static final int COMMAND = 900;
 }

@@ -8,15 +8,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5c29ba57-25d6-44a8-958d-d4d0bf1e66eb" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/mustream.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/mustream.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mustream-client/mustream-client.iml" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-client/mustream-client.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mustream-client/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-client/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mustream-client/src/main/java/org/mustream/client/net/AudioSender.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-client/src/main/java/org/mustream/client/net/AudioSender.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mustream-client/src/main/java/org/mustream/client/net/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-client/src/main/java/org/mustream/client/net/Client.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mustream-client/src/main/java/org/mustream/client/test/TestClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-client/src/main/java/org/mustream/client/test/TestClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mustream-common/mustream-common.iml" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-common/mustream-common.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mustream-common/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-common/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mustream-common/src/main/java/org/mustream/common/PackageHeader.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-common/src/main/java/org/mustream/common/PackageHeader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mustream-common/src/main/java/org/mustream/common/net/MustreamPackage.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-common/src/main/java/org/mustream/common/net/MustreamPackage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mustream-common/src/main/java/org/mustream/common/net/NeoOutputStream.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-common/src/main/java/org/mustream/common/net/NeoOutputStream.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mustream-common/src/main/java/org/mustream/common/sys/TrackAlert.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-common/src/main/java/org/mustream/common/sys/TrackAlert.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mustream-server/mustream-server.iml" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-server/mustream-server.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mustream-server/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-server/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/SoundPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/SoundPlayer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/TClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/TClient.java" afterDir="false" />
     </list>
@@ -54,6 +57,11 @@
         <option name="outputLevel" value="DEBUG" />
       </MavenGeneralSettings>
     </option>
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="jdkForImporter" value="#USE_PROJECT_JDK" />
+      </MavenImportingSettings>
+    </option>
   </component>
   <component name="ProjectId" id="1n2F3t5nqnax9tnBavEVOEKgyaw" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -70,11 +78,11 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/mustream-common/src/main/java/org/mustream/common/io" />
-    <property name="project.structure.last.edited" value="Modules" />
-    <property name="project.structure.proportion" value="0.0" />
-    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="gradle.compiler" />
+    <property name="settings.editor.selected.configurable" value="reference.settings.project.maven.runner" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -84,7 +92,7 @@
       <recent name="org.mustream.common.io" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Server">
+  <component name="RunManager" selected="Application.TestClient">
     <configuration name="Server" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.mustream.server.net.Server" />
       <module name="mustream-server" />
@@ -111,6 +119,17 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Application.TestClient" />
@@ -128,7 +147,9 @@
       <updated>1610580661615</updated>
       <workItem from="1610580662989" duration="5692000" />
       <workItem from="1610627947059" duration="10421000" />
-      <workItem from="1610671266070" duration="1052000" />
+      <workItem from="1610671266070" duration="5633000" />
+      <workItem from="1610676909417" duration="2000" />
+      <workItem from="1610747418673" duration="4641000" />
     </task>
     <servers />
   </component>
@@ -139,14 +160,9 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/TClient.java</url>
-          <line>57</line>
-          <option name="timeStamp" value="18" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/mustream-server/src/main/java/org/mustream/server/net/SoundPlayer.java</url>
-          <line>45</line>
-          <option name="timeStamp" value="19" />
+          <line>40</line>
+          <option name="timeStamp" value="22" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

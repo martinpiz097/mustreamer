@@ -1,10 +1,10 @@
 package org.mustream.server.net;
 
-import org.aucom.sound.Speaker;
+import org.aucom.SysInfo;
 import org.muplayer.audio.Track;
-import org.mustream.common.audio.AudioFormatUtils;
-import org.mustream.common.net.NeoInputStream;
+import org.mustream.common.io.ByteInputStream;
 
+import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import java.io.*;
 
@@ -12,11 +12,13 @@ public class SoundPlayer extends Thread {
     private volatile Track track;
     private volatile boolean on;
 
-    private final ByteArrayOutputStream outputStream;
+    private final ByteInputStream inputStream;
     private volatile int receivedData;
+    private final int fileSize;
 
-    public SoundPlayer() throws LineUnavailableException {
-        outputStream = new ByteArrayOutputStream();
+    public SoundPlayer(int fileSize) throws LineUnavailableException {
+        this.fileSize = fileSize;
+        inputStream = new ByteInputStream(fileSize);
         receivedData = 0;
         on = false;
         setName("SoundPlayer "+getId());
@@ -31,19 +33,21 @@ public class SoundPlayer extends Thread {
     }
 
     public synchronized void addBytes(byte[] bytes) throws IOException {
-        outputStream.write(bytes);
+        inputStream.addBytes(bytes);
         receivedData+=bytes.length;
     }
 
     public void shutdown() {
         on = false;
+        if (track != null)
+            track.kill();
     }
 
     @Override
     public void run() {
         on = true;
         waitForData();
-        track = Track.getTrack(new ByteArrayInputStream(outputStream.toByteArray()));
+        track = Track.getTrack(inputStream);
         track.start();
         waitForTrackPlaying();
         System.gc();
